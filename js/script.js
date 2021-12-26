@@ -66,7 +66,7 @@ const displayMovement = function (movements) {
   //Empty the container
   containerMovements.innerHTML = '';
 
-  //loop over the array
+  //loop over the arrays
   movements.forEach(function (mov, i) {
     const moveType = mov > 0 ? 'deposit' : 'withdrawal';
     const htmlEl = `
@@ -83,3 +83,16 @@ const displayMovement = function (movements) {
   });
 };
 displayMovement(account1.movements);
+
+//User validation function
+const createUsernames = function (accs) {
+  accs.forEach(function (acc) {
+    acc.username = acc.owner
+      .toLowerCase()
+      .split(' ')
+      .map(name => name[0])
+      .join('');
+  });
+};
+createUsernames(accounts);
+console.log(accounts);
