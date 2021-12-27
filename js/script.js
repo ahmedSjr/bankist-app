@@ -84,6 +84,15 @@ const displayMovement = function (movements) {
 };
 displayMovement(account1.movements);
 
+//function to calculate the sum of movemnets
+
+const calcBalance = function (movements) {
+  const balance = movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${balance}€`;
+};
+
+calcBalance(account1.movements);
+
 //User validation function
 const createUsernames = function (accs) {
   accs.forEach(function (acc) {
@@ -95,4 +104,3 @@ const createUsernames = function (accs) {
   });
 };
 createUsernames(accounts);
-console.log(accounts);
