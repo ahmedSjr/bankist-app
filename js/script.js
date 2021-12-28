@@ -82,7 +82,6 @@ const displayMovement = function (movements) {
     containerMovements.insertAdjacentHTML('afterbegin', htmlEl);
   });
 };
-displayMovement(account1.movements);
 
 //function to calculate the sum of movemnets
 
@@ -94,26 +93,26 @@ const calcBalance = function (movements) {
 calcBalance(account1.movements);
 
 //Calculate the summery function
-const calcSummary = function (movements) {
+const calcSummary = function (acc) {
   //For income
-  const incomes = movements
+  const incomes = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
   labelSumIn.textContent = `${incomes}€`;
   //For outcome
-  const outcomes = movements
+  const outcomes = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
   labelSumOut.textContent = `${Math.abs(outcomes)}€`;
   //For interest
-  const interest = movements
+  const interest = acc.movements
     .filter(mov => mov > 0)
-    .map(deposit => (deposit * 1.2) / 100)
+    .map(deposit => (deposit * acc.interestRate) / 100)
     .filter(int => int >= 1)
     .reduce((acc, int) => acc + int);
   labelSumInterest.textContent = `${interest}€`;
 };
-calcSummary(account1.movements);
+
 //User validation function
 const createUsernames = function (accs) {
   accs.forEach(function (acc) {
@@ -125,3 +124,33 @@ const createUsernames = function (accs) {
   });
 };
 createUsernames(accounts);
+
+//Handler for user Login
+
+let currentAccount;
+btnLogin.addEventListener('click', function (event) {
+  event.preventDefault();
+  currentAccount = accounts.find(
+    acc => acc.username === inputLoginUsername.value
+  );
+  console.log(currentAccount);
+
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    //Display ui and welcome message
+    labelWelcome.textContent = `Welcome again, ${
+      currentAccount.owner.split(' ')[0]
+    } `;
+
+    containerApp.style.opacity = 100;
+
+    //Clear input fields
+    inputLoginPin.value = inputLoginUsername.value = '';
+    inputLoginPin.blur();
+    //Display movements
+    displayMovement(currentAccount.movements);
+    //Display balance
+    calcBalance(currentAccount.movements);
+    //Display summary
+    calcSummary(currentAccount);
+  }
+});
