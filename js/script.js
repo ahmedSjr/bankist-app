@@ -143,7 +143,7 @@ btnLogin.addEventListener('click', function (e) {
   currentAccount = accounts.find(
     acc => acc.username === inputLoginUsername.value
   );
-  console.log(currentAccount);
+  // console.log(currentAccount);
 
   if (currentAccount?.pin === Number(inputLoginPin.value)) {
     //Display ui and welcome message
@@ -186,6 +186,22 @@ btnTransfer.addEventListener('click', function (e) {
   }
 });
 
+//Request a loan
+btnLoan.addEventListener('click', function (e) {
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount / 10)) {
+    //Add movement amount
+    currentAccount.movements.push(amount);
+
+    //Update UI
+    updateUI(currentAccount);
+  }
+  inputLoanAmount.value = '';
+});
+
+//Close Account
 btnClose.addEventListener('click', function (e) {
   e.preventDefault();
   if (
