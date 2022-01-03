@@ -84,7 +84,7 @@ const displayMovement = function (movements, sort = false) {
   });
 };
 
-//function to calculate the sum of movemnets
+//function to calculate the sum of movements
 
 const calcBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
@@ -168,19 +168,19 @@ btnLogin.addEventListener('click', function (e) {
 btnTransfer.addEventListener('click', function (e) {
   e.preventDefault();
   const amount = +inputTransferAmount.value;
-  const reciverAccount = accounts.find(
+  const receiverAccount = accounts.find(
     acc => acc.username === inputTransferTo.value
   );
   inputTransferAmount.value = inputTransferTo.value = '';
   if (
     amount > 0 &&
-    reciverAccount &&
+    receiverAccount &&
     currentAccount.balance >= amount &&
-    reciverAccount?.username !== currentAccount.username
+    receiverAccount?.username !== currentAccount.username
   ) {
     //The movements of transfer
     currentAccount.movements.push(-amount);
-    reciverAccount.movements.push(amount);
+    receiverAccount.movements.push(amount);
 
     //Update UI
     updateUI(currentAccount);
