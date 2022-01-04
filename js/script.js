@@ -72,25 +72,36 @@ const inputTransferAmount = document.querySelector('.form__input--amount');
 const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
+/////////////////////////////////////////////////
 
 //Functions
+//Format dates function
 const formatDate = function (date, locale) {
   const calcDayPassed = (day1, day2) =>
     Math.round(Math.abs(day1 - day2) / (1000 * 60 * 60 * 24));
 
   const daysPassed = calcDayPassed(new Date(), date);
-  console.log(daysPassed);
 
   if (daysPassed === 0) return 'Today';
   if (daysPassed === 1) return 'Yesterday';
   if (daysPassed <= 7) return `${daysPassed} days ago`;
 
+  //Format date manually
   // const day = `${date.getDate()}`.padStart(2, 0);
   // const month = `${date.getMonth() + 1}`.padStart(2, 0);
   // const year = date.getFullYear();
   // return `${day}/${month}/${year}`;
 
   return new Intl.DateTimeFormat(locale).format(date);
+};
+
+//Format currency function
+const formatCur = function (value, locale, currency) {
+  //Format the currency
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency,
+  }).format(value);
 };
 //Display the Movements
 const displayMovement = function (acc, sort = false) {
@@ -104,14 +115,18 @@ const displayMovement = function (acc, sort = false) {
   movs.forEach(function (mov, i) {
     const moveType = mov > 0 ? 'deposit' : 'withdrawal';
     const date = new Date(acc.movementsDates[i]);
-
+    //Format the dates
     const displayDate = formatDate(date, acc.locale);
+
+    //Format the currency
+    const formattedMov = formatCur(mov, acc.locale, acc.currency);
+
     const htmlEl = `
   <div class="movements__row">
     <div class="movements__type movements__type--${moveType}">
       ${i + 1} ${moveType}</div>
       <div class="movements__date">${displayDate}</div>
-    <div class="movements__value">${mov.toFixed(2)}€</div>
+    <div class="movements__value">${formattedMov}</div>
   </div>
   `;
 
@@ -120,12 +135,13 @@ const displayMovement = function (acc, sort = false) {
   });
 };
 
-//function to calculate the sum of movements
+//function to calculate the sum of movements(Balance)
 
 const calcBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
 
-  labelBalance.textContent = `${acc.balance.toFixed(2)}€`;
+  const formattedMov = formatCur(acc.balance, acc.locale, acc.currency);
+  labelBalance.textContent = `${formattedMov}`;
 };
 
 //Calculate the summery function
@@ -134,19 +150,23 @@ const calcSummary = function (acc) {
   const incomes = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes.toFixed(2)}€`;
+  labelSumIn.textContent = formatCur(incomes, acc.locale, acc.currency);
   //For outcome
   const outcomes = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(outcomes.toFixed(2))}€`;
+  labelSumOut.textContent = formatCur(
+    Math.abs(outcomes),
+    acc.locale,
+    acc.currency
+  );
   //For interest
   const interest = acc.movements
     .filter(mov => mov > 0)
     .map(deposit => (deposit * acc.interestRate) / 100)
     .filter(int => int >= 1)
     .reduce((acc, int) => acc + int);
-  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
+  labelSumInterest.textContent = formatCur(interest, acc.locale, acc.currency);
 };
 
 //User validation function
